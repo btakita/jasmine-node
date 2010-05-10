@@ -1,6 +1,8 @@
-require.paths.push("./lib");
-var jasmine = require('jasmine');
-var sys = require('sys');
+var sys = require('sys'),
+    path = require('path');
+
+require.paths.push(path.join(__dirname, "lib"));
+var jasmine = require('jasmine')
 
 for(var key in jasmine) {
   global[key] = jasmine[key];
@@ -16,7 +18,12 @@ process.argv.forEach(function(arg){
   }
 });
 
+var specPath = process.ARGV[2] || (__dirname + "/spec")
+require(process.ARGV[2].replace(/\.js$/, ""))
 
-jasmine.executeSpecsInFolder(__dirname + '/spec', function(runner, log){
-  process.exit(runner.results().failedCount);
+jasmine.executeSpecs(specPath, function(runner, log){
+  // This is to workaround a node.js bug (http://github.com/ry/node/issues/#issue/138)
+  setTimeout(function() {
+    process.exit(runner.results().failedCount);
+  }, 100)
 }, isVerbose, showColors);
